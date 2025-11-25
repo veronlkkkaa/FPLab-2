@@ -89,7 +89,8 @@
 ```clojure
 (dict-insert [this k v]
   (->RBDict (insert-node (:cmp this) (:root this) k v)
-            (:cmp this)))```
+            (:cmp this)))
+```
 
 ### Реализация (ключевые элементы)
 
@@ -106,42 +107,47 @@
 #### Поиск (`lookup`)
 
 ```clojure
-(dict-lookup [this k] (lookup-value (:cmp this) (:root this) k))```
+(dict-lookup [this k] (lookup-value (:cmp this) (:root this) k))
+```
 
 Логарифмическая сложность
 
-####Map и Filter
+#### Map и Filter
 
 Создают новое дерево, проходя по узлам:
 
 ```(dict-map [this f] (->RBDict (map-node f (:root this)) (:cmp this)))
-(dict-filter [this pred] (->RBDict (filter-node pred (:root this)) (:cmp this)))```
+(dict-filter [this pred] (->RBDict (filter-node pred (:root this)) (:cmp this)))
+```
 
-####Foldl и Foldr
+#### Foldl и Foldr
 
 Левый и правый inorder-обход:
 
 ```(dict-foldl [this f init] (foldl-node (:root this) f init))
-(dict-foldr [this f init] (foldr-node (:root this) f init))```
+(dict-foldr [this f init] (foldr-node (:root this) f init))
+```
 
-####Моноид
+#### Моноид
 ```(dict-mempty [this] 
   (dict-empty this))
 
 (dict-mappend [this other]
   (reduce (fn [d [k v]] (insert d k v))
           this
-          (inorder (:root other))))```
+          (inorder (:root other))))
+```
 
-####Эффективное сравнение
+#### Эффективное сравнение
 ```(dict-equal? [this other]
   (= (inorder (:root this))
-     (inorder (:root other))))```
+     (inorder (:root other))))
+```
 
 
 Сложность — O(n) без сортировки.
 
-####Примеры использования
+#### Примеры использования
 ```(def d
   (-> empty-dict
       (insert 3 "c")
@@ -160,10 +166,11 @@
 ;; => словарь только с ключом 2
 
 (mappend d d)
-(equal? d d)     ; => true```
+(equal? d d)     ; => true
+```
 
-###Тестирование
-####Unit-тесты (test/rb_dict/unit_test.clj)
+### Тестирование
+#### Unit-тесты (test/rb_dict/unit_test.clj)
 
 Покрывают:
 
@@ -174,7 +181,7 @@
 -свойства моноида;
 -сравнение словарей.
 
-####Property-based тестирование (test/rb_dict/property_test.clj)
+#### Property-based тестирование (test/rb_dict/property_test.clj)
 
 Проверено:
 
@@ -186,7 +193,7 @@
 -filter уменьшает или сохраняет размер;
 -равенство рефлексивно и симметрично.
 
-####Генераторы (test/rb_dict/generators.clj)
+#### Генераторы (test/rb_dict/generators.clj)
 
 Создают:
 
@@ -194,7 +201,7 @@
 -случайные словари,
 -словари с гарантированно существующим ключом.
 
-##Выводы
+## Выводы
 
 В ходе работы была реализована:
 функциональная, неизменяемая структура данных Dictionary на основе красно-чёрного дерева;
