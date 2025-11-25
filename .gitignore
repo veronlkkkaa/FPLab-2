@@ -10,7 +10,7 @@
 # AOT artifacts
 /**/*.class
 
-# Local Maven repo if used
+# Local Maven repo
 .m2/
 
 # REPL files
@@ -31,8 +31,14 @@ profiles.clj
 # Clojure tools (clj-kondo, LSP)
 # ======================================================
 
-# clj-kondo linting cache
+# clj-kondo lint cache (ignores entire directory)
 .clj-kondo/
+
+# Optional: explicitly ignore long nested cache paths
+.clj-kondo/.cache/
+.clj-kondo/.cache/v1/
+.clj-kondo/.cache/v1/clj/
+.clj-kondo/.cache/v1/clj/*.transit.json
 
 # Clojure LSP cache/indexing
 .lsp/
@@ -67,13 +73,13 @@ out/
 *.log
 
 # ======================================================
-# Node (if any JS tooling is used)
+# Node (if used)
 # ======================================================
 
 node_modules/
 
 # ======================================================
-# Generated docs
+# Generated documentation
 # ======================================================
 
 /doc/
@@ -83,3 +89,9 @@ node_modules/
 # ======================================================
 
 *.orig
+
+# ======================================================
+# Leiningen failure marker
+# ======================================================
+
+.lein-failures
