@@ -89,7 +89,7 @@
 ```clojure
 (dict-insert [this k v]
   (->RBDict (insert-node (:cmp this) (:root this) k v)
-            (:cmp this)))
+            (:cmp this)))```
 
 ### Реализация (ключевые элементы)
 
@@ -106,7 +106,7 @@
 #### Поиск (`lookup`)
 
 ```clojure
-(dict-lookup [this k] (lookup-value (:cmp this) (:root this) k))
+(dict-lookup [this k] (lookup-value (:cmp this) (:root this) k))```
 
 Логарифмическая сложность
 
@@ -115,14 +115,14 @@
 Создают новое дерево, проходя по узлам:
 
 ```(dict-map [this f] (->RBDict (map-node f (:root this)) (:cmp this)))
-(dict-filter [this pred] (->RBDict (filter-node pred (:root this)) (:cmp this)))
+(dict-filter [this pred] (->RBDict (filter-node pred (:root this)) (:cmp this)))```
 
 ####Foldl и Foldr
 
 Левый и правый inorder-обход:
 
 ```(dict-foldl [this f init] (foldl-node (:root this) f init))
-(dict-foldr [this f init] (foldr-node (:root this) f init))
+(dict-foldr [this f init] (foldr-node (:root this) f init))```
 
 ####Моноид
 ```(dict-mempty [this] 
@@ -131,12 +131,12 @@
 (dict-mappend [this other]
   (reduce (fn [d [k v]] (insert d k v))
           this
-          (inorder (:root other))))
+          (inorder (:root other))))```
 
 ####Эффективное сравнение
 ```(dict-equal? [this other]
   (= (inorder (:root this))
-     (inorder (:root other))))
+     (inorder (:root other))))```
 
 
 Сложность — O(n) без сортировки.
@@ -160,7 +160,7 @@
 ;; => словарь только с ключом 2
 
 (mappend d d)
-(equal? d d)     ; => true
+(equal? d d)     ; => true```
 
 ###Тестирование
 ####Unit-тесты (test/rb_dict/unit_test.clj)
