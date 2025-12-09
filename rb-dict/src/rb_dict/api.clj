@@ -6,7 +6,6 @@
   (dict-remove [this k] "Удаляет элемент")
   (dict-lookup [this k] "Возвращает значение или nil")
 
-  
   (dict-map [this f] "f k v -> v' : отображение")
   (dict-filter [this pred] "pred k v -> bool")
 

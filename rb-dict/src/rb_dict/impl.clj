@@ -11,7 +11,6 @@
 
 ;; внутренние утилиты
 
-
 (defn- make-node [color k v l r]
   (->RBNode color k v l r))
 
@@ -161,60 +160,60 @@
 (deftype RBDict [root cmp]
   api/IDict
   (dict-empty [_] (RBDict. nil compare))
-  
+
   (dict-insert [this k v]
     (RBDict. (insert-node cmp root k v) cmp))
-  
+
   (dict-remove [this k]
     (RBDict. (remove-node cmp root k) cmp))
-  
+
   (dict-lookup [this k]
     (lookup-value cmp root k))
-  
+
   (dict-map [this f]
     (RBDict. (map-node f root) cmp))
-  
+
   (dict-filter [this pred]
     (RBDict. (filter-node pred root) cmp))
-  
+
   (dict-foldl [this f init]
     (foldl-node f init root))
-  
+
   (dict-foldr [this f init]
     (foldr-node f init root))
-  
+
   ;; Моноид
   (dict-mempty [this]
     (RBDict. nil compare))
-  
+
   (dict-mappend [this other]
     (reduce (fn [d [k v]]
               (api/dict-insert d k v))
             this
             (inorder (.-root other))))
-  
+
   ;; сравнение словарей
   (dict-equal? [this other]
     (= (inorder root)
        (inorder (.-root other))))
-  
+
   ;; Реализация Java интерфейсов
-  
+
   clojure.lang.Seqable
   (seq [this]
     (when root
       (seq (map first (inorder root)))))
-  
+
   clojure.lang.Counted
   (count [this]
     (count (inorder root)))
-  
+
   clojure.lang.ILookup
   (valAt [this k]
     (lookup-value cmp root k))
   (valAt [this k not-found]
     (or (lookup-value cmp root k) not-found))
-  
+
   clojure.lang.Associative
   (containsKey [this k]
     (boolean (lookup-value cmp root k)))
@@ -223,7 +222,7 @@
       (clojure.lang.MapEntry. k v)))
   (assoc [this k v]
     (RBDict. (insert-node cmp root k v) cmp))
-  
+
   clojure.lang.IPersistentCollection
   (cons [this o]
     (if (vector? o)
@@ -235,7 +234,7 @@
   (equiv [this other]
     (and (instance? RBDict other)
          (= (inorder root) (inorder (.-root other)))))
-  
+
   clojure.lang.IFn
   (invoke [this k]
     (lookup-value cmp root k)))
