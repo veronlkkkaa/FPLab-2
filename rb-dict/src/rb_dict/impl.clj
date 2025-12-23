@@ -214,8 +214,7 @@
     (= (inorder (:root this))
        (inorder (:root other))))
 
-  
-  ;; Реализация clojure.core протоколов
+;; Реализация clojure.core протоколов
 
   clojure.lang.Seqable
   (seq [this]
