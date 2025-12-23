@@ -16,13 +16,11 @@
   (count [this]
     (count (inorder root)))
 
-  clojure.lang.ILookup
+  clojure.lang.Associative
   (valAt [this k]
     (lookup-value cmp root k))
   (valAt [this k not-found]
     (or (lookup-value cmp root k) not-found))
-
-  clojure.lang.Associative
   (containsKey [this k]
     (boolean (lookup-value cmp root k)))
   (entryAt [this k]
