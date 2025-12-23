@@ -6,7 +6,40 @@
 (def BLACK :black)
 
 (defrecord RBNode [color key value left right])
-(defrecord RBDict [root cmp])
+
+(defrecord RBDict [root cmp]
+  clojure.lang.Seqable
+  (seq [this]
+    (map first (inorder root)))
+
+  clojure.lang.Counted
+  (count [this]
+    (count (inorder root)))
+
+  clojure.lang.ILookup
+  (valAt [this k]
+    (lookup-value cmp root k))
+  (valAt [this k not-found]
+    (or (lookup-value cmp root k) not-found))
+
+  clojure.lang.Associative
+  (containsKey [this k]
+    (boolean (lookup-value cmp root k)))
+  (entryAt [this k]
+    (when-let [v (lookup-value cmp root k)]
+      (clojure.lang.MapEntry. k v)))
+  (assoc [this k v]
+    (->RBDict (insert-node cmp root k v) cmp))
+
+  clojure.lang.IPersistentCollection
+  (cons [this [k v]]
+    (->RBDict (insert-node cmp root k v) cmp))
+  (empty [_]
+    (->RBDict nil compare))
+
+  clojure.lang.IFn
+  (invoke [this k]
+    (lookup-value cmp root k)))
 
 (declare insert-node lookup-value remove-node map-node filter-node foldl-node foldr-node inorder)
 
@@ -212,39 +245,4 @@
   ;; сравнение словарей
   (dict-equal? [this other]
     (= (inorder (:root this))
-       (inorder (:root other))))
-
-;; Реализация clojure.core протоколов
-
-  clojure.lang.Seqable
-  (seq [this]
-    (map first (inorder (:root this))))
-
-  clojure.lang.Counted
-  (count [this]
-    (count (inorder (:root this))))
-
-  clojure.lang.ILookup
-  (valAt [this k]
-    (api/dict-lookup this k))
-  (valAt [this k not-found]
-    (or (api/dict-lookup this k) not-found))
-
-  clojure.lang.Associative
-  (containsKey [this k]
-    (boolean (api/dict-lookup this k)))
-  (entryAt [this k]
-    (when (api/dict-lookup this k)
-      (clojure.lang.MapEntry. k (api/dict-lookup this k))))
-  (assoc [this k v]
-    (api/dict-insert this k v))
-
-  clojure.lang.IPersistentCollection
-  (cons [this [k v]]
-    (api/dict-insert this k v))
-  (empty [_]
-    (create-empty-dict))
-
-  clojure.lang.IFn
-  (invoke [this k]
-    (api/dict-lookup this k)))
+       (inorder (:root other)))))
