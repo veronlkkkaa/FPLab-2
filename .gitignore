@@ -15,6 +15,10 @@ target/
 *.swo
 *~
 
+# Clojure dev tools
+.clj-kondo/.cache/
+.lsp/.cache/
+
 # OS
 .DS_Store
 Thumbs.db

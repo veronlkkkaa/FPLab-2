@@ -35,23 +35,6 @@ jobs:
         with:
           lein: latest
 
-      - name: Run unit tests
-        working-directory: ./rb-dict
-        run: lein test rb-dict.unit-test
-
-      - name: Run property-based tests
-        working-directory: ./rb-dict
-        run: lein test rb-dict.property-test
-
-      - name: Run mixed keys unit tests
-        working-directory: ./rb-dict
-        run: lein test rb-dict.mixed-keys-test
-
-      - name: Run mixed keys property-based tests
-        working-directory: ./rb-dict
-        run: lein test rb-dict.mixed-keys-pbt
-
       - name: Run all tests
-        working-directory: ./rb-dict
         run: lein test
 

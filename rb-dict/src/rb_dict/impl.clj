@@ -6,8 +6,13 @@
 (def BLACK :black)
 
 (defrecord RBNode [color key value left right])
+(defrecord RBDict [root cmp])
 
 (declare insert-node lookup-value remove-node map-node filter-node foldl-node foldr-node inorder)
+
+;; Создание пустого словаря
+(defn create-empty-dict []
+  (->RBDict nil compare))
 
 ;; Создание пустого словаря с заданным компаратором
 (defn dict-empty-with
