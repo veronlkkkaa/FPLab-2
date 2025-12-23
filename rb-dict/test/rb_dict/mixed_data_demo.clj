@@ -20,7 +20,6 @@
 
 ;; РЕШЕНИЕ 1: Свой компаратор для смешанных типов
 
-  
   (defn mixed-compare [a b]
     "Компаратор, который может сравнивать разные типы"
     (let [type-a (class a)
@@ -34,7 +33,6 @@
   ;; Создаем словарь с кастомным компаратором
   (def mixed-dict (impl/->RBDict nil mixed-compare))
 
-  
   (println "\nСМЕШАННЫЙ СЛОВАРЬ")
   (def md1 (dict/insert mixed-dict 5 "пять"))
   (def md2 (dict/insert md1 "hello" "привет"))
@@ -54,13 +52,11 @@
 
 ;; РЕШЕНИЕ 2: Преобразовать все к строкам
 
-  
   (defn string-compare [a b]
     (compare (str a) (str b)))
 
   (def string-dict (impl/->RBDict nil string-compare))
 
-  
   (println "\nСТРОКОВЫЙ СЛОВАРЬ")
   (def sd1 (dict/insert string-dict 5 "пять"))
   (def sd2 (dict/insert sd1 "hello" "привет"))
@@ -75,7 +71,6 @@
 
 ;; ГЕНЕРАТОР для смешанных данных
 
-  
   (def gen-mixed-key
     "Генератор, который создает числа, строки или keywords"
     (gen/one-of [gen/int
