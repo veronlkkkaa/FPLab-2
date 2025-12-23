@@ -42,12 +42,12 @@
   (def md4 (dict/insert md3 "world" "мир"))
   (def md5 (dict/insert md4 :keyword "ключевое слово"))
   (def md6 (dict/insert md5 'symbol "символ"))
-  
+
   (println "Поиск числа 5:" (dict/lookup md6 5))          ;; => "пять"
   (println "Поиск строки 'hello':" (dict/lookup md6 "hello"))  ;; => "привет"
   (println "Поиск keyword :keyword:" (dict/lookup md6 :keyword)) ;; => "ключевое слово"
   (println "Поиск symbol 'symbol:" (dict/lookup md6 'symbol))   ;; => "символ"
-  
+
   (println "\nВсе ключи в порядке:")
   (println (dict/dict->seq md6))
   ;; Ключи отсортированы сначала по типу, потом внутри типа
@@ -65,11 +65,11 @@
   (def sd1 (dict/insert string-dict 5 "пять"))
   (def sd2 (dict/insert sd1 "hello" "привет"))
   (def sd3 (dict/insert sd2 :keyword "ключ"))
-  
+
   (println "Поиск 5:" (dict/lookup sd3 5))
   (println "Поиск 'hello':" (dict/lookup sd3 "hello"))
   (println "Поиск :keyword:" (dict/lookup sd3 :keyword))
-  
+
   (println "\nВсе ключи:" (dict/dict->seq sd3))
   ;; Все отсортировано как строки: "5" < ":keyword" < "hello"
 
@@ -81,13 +81,13 @@
     (gen/one-of [gen/int
                  gen/string-alphanumeric
                  (gen/fmap keyword gen/string-alphanumeric)]))
-  
+
   (def gen-mixed-pair
     (gen/tuple gen-mixed-key gen/int))
-  
+
   (def gen-mixed-pairs
     (gen/vector gen-mixed-pair 0 10))
-  
+
   (def gen-mixed-dict
     (gen/fmap (fn [pairs]
                 (reduce (fn [d [k v]]
@@ -100,8 +100,7 @@
                         pairs))
               gen-mixed-pairs))
 
-  
-  ;; Пример генерации
+;; Пример генерации
   (println "\nГЕНЕРАЦИЯ СЛУЧАЙНЫХ СМЕШАННЫХ ДАННЫХ")
   (require '[clojure.test.check :as tc])
   (println "Примеры пар:")
