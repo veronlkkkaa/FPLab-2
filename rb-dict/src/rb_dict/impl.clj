@@ -9,6 +9,12 @@
 
 (declare insert-node lookup-value remove-node map-node filter-node foldl-node foldr-node inorder)
 
+;; Создание пустого словаря с заданным компаратором
+(defn dict-empty-with
+  "Создать пустой RBDict с заданным компаратором."
+  [cmp]
+  (->RBDict nil cmp))
+
 ;; внутренние утилиты
 
 (defn- make-node [color k v l r]
@@ -159,7 +165,14 @@
 
 (deftype RBDict [root cmp]
   api/IDict
+<<<<<<< HEAD:rb-dict/src/rb_dict/impl.clj
   (dict-empty [_] (RBDict. nil compare))
+=======
+
+  (dict-empty [this]
+    ;; Сохраняем компаратор из текущего словаря
+    (->RBDict nil (:cmp this)))
+>>>>>>> 23f7f5a (changes):rb-dict/src/impl.clj
 
   (dict-insert [this k v]
     (RBDict. (insert-node cmp root k v) cmp))
@@ -184,7 +197,12 @@
 
   ;; Моноид
   (dict-mempty [this]
+<<<<<<< HEAD:rb-dict/src/rb_dict/impl.clj
     (RBDict. nil compare))
+=======
+    ;; Сохраняем компаратор из текущего словаря
+    (->RBDict nil (:cmp this)))
+>>>>>>> 23f7f5a (changes):rb-dict/src/impl.clj
 
   (dict-mappend [this other]
     (reduce (fn [d [k v]]
