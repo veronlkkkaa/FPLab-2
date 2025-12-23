@@ -6,40 +6,9 @@
 (def BLACK :black)
 
 (defrecord RBNode [color key value left right])
+(defrecord RBDict [root cmp])
 
-(defrecord RBDict [root cmp]
-  clojure.lang.Seqable
-  (seq [this]
-    (map first (inorder root)))
-
-  clojure.lang.Counted
-  (count [this]
-    (count (inorder root)))
-
-  clojure.lang.Associative
-  (valAt [this k]
-    (lookup-value cmp root k))
-  (valAt [this k not-found]
-    (or (lookup-value cmp root k) not-found))
-  (containsKey [this k]
-    (boolean (lookup-value cmp root k)))
-  (entryAt [this k]
-    (when-let [v (lookup-value cmp root k)]
-      (clojure.lang.MapEntry. k v)))
-  (assoc [this k v]
-    (->RBDict (insert-node cmp root k v) cmp))
-
-  clojure.lang.IPersistentCollection
-  (cons [this [k v]]
-    (->RBDict (insert-node cmp root k v) cmp))
-  (empty [_]
-    (->RBDict nil compare))
-
-  clojure.lang.IFn
-  (invoke [this k]
-    (lookup-value cmp root k)))
-
-(declare insert-node lookup-value remove-node map-node filter-node foldl-node foldr-node inorder)
+(declare insert-node lookup-value remove-node map-node filter-node foldl-node foldr-node inorder from-sorted)
 
 ;; Создание пустого словаря
 (defn create-empty-dict []
@@ -244,3 +213,36 @@
   (dict-equal? [this other]
     (= (inorder (:root this))
        (inorder (:root other)))))
+
+;; Реализация Java интерфейсов для интеграции с Clojure
+(extend-type RBDict
+  clojure.lang.Seqable
+  (seq [this]
+    (map first (inorder (:root this))))
+
+  clojure.lang.Counted
+  (count [this]
+    (count (inorder (:root this))))
+
+  clojure.lang.Associative
+  (valAt [this k]
+    (lookup-value (:cmp this) (:root this) k))
+  (valAt [this k not-found]
+    (or (lookup-value (:cmp this) (:root this) k) not-found))
+  (containsKey [this k]
+    (boolean (lookup-value (:cmp this) (:root this) k)))
+  (entryAt [this k]
+    (when-let [v (lookup-value (:cmp this) (:root this) k)]
+      (clojure.lang.MapEntry. k v)))
+  (assoc [this k v]
+    (->RBDict (insert-node (:cmp this) (:root this) k v) (:cmp this)))
+
+  clojure.lang.IPersistentCollection
+  (cons [this [k v]]
+    (->RBDict (insert-node (:cmp this) (:root this) k v) (:cmp this)))
+  (empty [_]
+    (->RBDict nil compare))
+
+  clojure.lang.IFn
+  (invoke [this k]
+    (lookup-value (:cmp this) (:root this) k)))
