@@ -166,102 +166,86 @@
                       (inorder node))]
     (from-sorted (vec pairs))))
 
-;; Определение типа RBDict с реализацией интерфейсов
+;; Методы протокола
 
-(deftype RBDict [root cmp]
+(extend-type RBDict
   api/IDict
-<<<<<<< HEAD:rb-dict/src/rb_dict/impl.clj
-  (dict-empty [_] (RBDict. nil compare))
-=======
 
   (dict-empty [this]
     ;; Сохраняем компаратор из текущего словаря
     (->RBDict nil (:cmp this)))
->>>>>>> 23f7f5a (changes):rb-dict/src/impl.clj
 
   (dict-insert [this k v]
-    (RBDict. (insert-node cmp root k v) cmp))
+    (->RBDict (insert-node (:cmp this) (:root this) k v)
+              (:cmp this)))
 
   (dict-remove [this k]
-    (RBDict. (remove-node cmp root k) cmp))
+    (->RBDict (remove-node (:cmp this) (:root this) k)
+              (:cmp this)))
 
   (dict-lookup [this k]
-    (lookup-value cmp root k))
+    (lookup-value (:cmp this) (:root this) k))
 
   (dict-map [this f]
-    (RBDict. (map-node f root) cmp))
+    (->RBDict (map-node f (:root this)) (:cmp this)))
 
   (dict-filter [this pred]
-    (RBDict. (filter-node pred root) cmp))
+    (->RBDict (filter-node pred (:root this)) (:cmp this)))
 
   (dict-foldl [this f init]
-    (foldl-node f init root))
+    (foldl-node f init (:root this)))
 
   (dict-foldr [this f init]
-    (foldr-node f init root))
+    (foldr-node f init (:root this)))
 
   ;; Моноид
   (dict-mempty [this]
-<<<<<<< HEAD:rb-dict/src/rb_dict/impl.clj
-    (RBDict. nil compare))
-=======
     ;; Сохраняем компаратор из текущего словаря
     (->RBDict nil (:cmp this)))
->>>>>>> 23f7f5a (changes):rb-dict/src/impl.clj
 
   (dict-mappend [this other]
     (reduce (fn [d [k v]]
               (api/dict-insert d k v))
             this
-            (inorder (.-root other))))
+            (inorder (:root other))))
 
   ;; сравнение словарей
   (dict-equal? [this other]
-    (= (inorder root)
-       (inorder (.-root other))))
+    (= (inorder (:root this))
+       (inorder (:root other))))
 
-  ;; Реализация Java интерфейсов
+  
+  ;; Реализация clojure.core протоколов
 
   clojure.lang.Seqable
   (seq [this]
-    (when root
-      (seq (map first (inorder root)))))
+    (map first (inorder (:root this))))
 
   clojure.lang.Counted
   (count [this]
-    (count (inorder root)))
+    (count (inorder (:root this))))
 
   clojure.lang.ILookup
   (valAt [this k]
-    (lookup-value cmp root k))
+    (api/dict-lookup this k))
   (valAt [this k not-found]
-    (or (lookup-value cmp root k) not-found))
+    (or (api/dict-lookup this k) not-found))
 
   clojure.lang.Associative
   (containsKey [this k]
-    (boolean (lookup-value cmp root k)))
+    (boolean (api/dict-lookup this k)))
   (entryAt [this k]
-    (when-let [v (lookup-value cmp root k)]
-      (clojure.lang.MapEntry. k v)))
+    (when (api/dict-lookup this k)
+      (clojure.lang.MapEntry. k (api/dict-lookup this k))))
   (assoc [this k v]
-    (RBDict. (insert-node cmp root k v) cmp))
+    (api/dict-insert this k v))
 
   clojure.lang.IPersistentCollection
-  (cons [this o]
-    (if (vector? o)
-      (let [[k v] o]
-        (RBDict. (insert-node cmp root k v) cmp))
-      (throw (IllegalArgumentException. "cons expects a vector [k v]"))))
+  (cons [this [k v]]
+    (api/dict-insert this k v))
   (empty [_]
-    (RBDict. nil compare))
-  (equiv [this other]
-    (and (instance? RBDict other)
-         (= (inorder root) (inorder (.-root other)))))
+    (create-empty-dict))
 
   clojure.lang.IFn
   (invoke [this k]
-    (lookup-value cmp root k)))
-
-;; Создание пустого словаря
-(defn create-empty-dict []
-  (RBDict. nil compare))
+    (api/dict-lookup this k)))
