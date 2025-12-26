@@ -233,11 +233,7 @@
     (RBDict. nil compare))
   (equiv [this other]
     (and (instance? RBDict other)
-         (= (inorder root) (inorder (.-root other)))))
-
-  clojure.lang.IFn
-  (invoke [this k]
-    (lookup-value cmp root k)))
+         (= (inorder root) (inorder (.-root other))))))
 
 ;; Создание пустого словаря
 (defn create-empty-dict []
