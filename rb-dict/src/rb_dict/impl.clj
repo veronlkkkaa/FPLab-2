@@ -6,19 +6,8 @@
 (def BLACK :black)
 
 (defrecord RBNode [color key value left right])
-(defrecord RBDict [root cmp])
 
-(declare insert-node lookup-value remove-node map-node filter-node foldl-node foldr-node inorder from-sorted)
-
-;; Создание пустого словаря
-(defn create-empty-dict []
-  (->RBDict nil compare))
-
-;; Создание пустого словаря с заданным компаратором
-(defn dict-empty-with
-  "Создать пустой RBDict с заданным компаратором."
-  [cmp]
-  (->RBDict nil cmp))
+(declare insert-node lookup-value remove-node map-node filter-node foldl-node foldr-node inorder)
 
 ;; внутренние утилиты
 
@@ -166,83 +155,90 @@
                       (inorder node))]
     (from-sorted (vec pairs))))
 
-;; Методы протокола
+;; Определение типа RBDict с реализацией интерфейсов
 
-(extend-type RBDict
+(deftype RBDict [root cmp]
   api/IDict
-
-  (dict-empty [this]
-    ;; Сохраняем компаратор из текущего словаря
-    (->RBDict nil (:cmp this)))
+  (dict-empty [_] (RBDict. nil compare))
 
   (dict-insert [this k v]
-    (->RBDict (insert-node (:cmp this) (:root this) k v)
-              (:cmp this)))
+    (RBDict. (insert-node cmp root k v) cmp))
 
   (dict-remove [this k]
-    (->RBDict (remove-node (:cmp this) (:root this) k)
-              (:cmp this)))
+    (RBDict. (remove-node cmp root k) cmp))
 
   (dict-lookup [this k]
-    (lookup-value (:cmp this) (:root this) k))
+    (lookup-value cmp root k))
 
   (dict-map [this f]
-    (->RBDict (map-node f (:root this)) (:cmp this)))
+    (RBDict. (map-node f root) cmp))
 
   (dict-filter [this pred]
-    (->RBDict (filter-node pred (:root this)) (:cmp this)))
+    (RBDict. (filter-node pred root) cmp))
 
   (dict-foldl [this f init]
-    (foldl-node f init (:root this)))
+    (foldl-node f init root))
 
   (dict-foldr [this f init]
-    (foldr-node f init (:root this)))
+    (foldr-node f init root))
 
   ;; Моноид
   (dict-mempty [this]
-    ;; Сохраняем компаратор из текущего словаря
-    (->RBDict nil (:cmp this)))
+    (RBDict. nil compare))
 
   (dict-mappend [this other]
     (reduce (fn [d [k v]]
               (api/dict-insert d k v))
             this
-            (inorder (:root other))))
+            (inorder (.-root other))))
 
   ;; сравнение словарей
   (dict-equal? [this other]
-    (= (inorder (:root this))
-       (inorder (:root other)))))
+    (= (inorder root)
+       (inorder (.-root other))))
 
-;; Реализация Java интерфейсов для интеграции с Clojure
-(extend-type RBDict
+  ;; Реализация Java интерфейсов
+
   clojure.lang.Seqable
   (seq [this]
-    (map first (inorder (:root this))))
+    (when root
+      (seq (map first (inorder root)))))
 
   clojure.lang.Counted
   (count [this]
-    (count (inorder (:root this))))
+    (count (inorder root)))
+
+  clojure.lang.ILookup
+  (valAt [this k]
+    (lookup-value cmp root k))
+  (valAt [this k not-found]
+    (or (lookup-value cmp root k) not-found))
 
   clojure.lang.Associative
-  (valAt [this k]
-    (lookup-value (:cmp this) (:root this) k))
-  (valAt [this k not-found]
-    (or (lookup-value (:cmp this) (:root this) k) not-found))
   (containsKey [this k]
-    (boolean (lookup-value (:cmp this) (:root this) k)))
+    (boolean (lookup-value cmp root k)))
   (entryAt [this k]
-    (when-let [v (lookup-value (:cmp this) (:root this) k)]
+    (when-let [v (lookup-value cmp root k)]
       (clojure.lang.MapEntry. k v)))
   (assoc [this k v]
-    (->RBDict (insert-node (:cmp this) (:root this) k v) (:cmp this)))
+    (RBDict. (insert-node cmp root k v) cmp))
 
   clojure.lang.IPersistentCollection
-  (cons [this [k v]]
-    (->RBDict (insert-node (:cmp this) (:root this) k v) (:cmp this)))
+  (cons [this o]
+    (if (vector? o)
+      (let [[k v] o]
+        (RBDict. (insert-node cmp root k v) cmp))
+      (throw (IllegalArgumentException. "cons expects a vector [k v]"))))
   (empty [_]
-    (->RBDict nil compare))
+    (RBDict. nil compare))
+  (equiv [this other]
+    (and (instance? RBDict other)
+         (= (inorder root) (inorder (.-root other)))))
 
   clojure.lang.IFn
   (invoke [this k]
-    (lookup-value (:cmp this) (:root this) k)))
+    (lookup-value cmp root k)))
+
+;; Создание пустого словаря
+(defn create-empty-dict []
+  (RBDict. nil compare))

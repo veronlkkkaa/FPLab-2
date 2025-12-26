@@ -6,11 +6,6 @@
   "Пустой словарь"
   (impl/create-empty-dict))
 
-(defn empty-dict-with
-  "Создать пустой словарь с заданным компаратором"
-  [cmp]
-  (impl/dict-empty-with cmp))
-
 (defn insert [d k v] (api/dict-insert d k v))
 (defn remove-key [d k] (api/dict-remove d k))
 (defn lookup [d k] (api/dict-lookup d k))
