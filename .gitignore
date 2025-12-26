@@ -16,8 +16,8 @@ target/
 *~
 
 # Clojure dev tools
-.clj-kondo/.cache/
-.lsp/.cache/
+.clj-kondo/
+.lsp/
 
 # OS
 .DS_Store
