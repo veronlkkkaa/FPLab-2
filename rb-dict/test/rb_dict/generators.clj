@@ -10,7 +10,7 @@
 (def gen-pairs
   (gen/vector gen-pair 0 20))
 
-;; Генератор с использованием gen/bind:
+
 ;; Создаёт словарь и ключ, который гарантированно в нём есть
 (def gen-dict-with-key
   (gen/bind gen-pairs

@@ -17,7 +17,6 @@
 
 ```clojure
 (defprotocol IDict
-  (dict-empty [this] "Пустой словарь")
   (dict-insert [this k v] "Добавляет элемент")
   (dict-remove [this k] "Удаляет элемент")
   (dict-lookup [this k] "Возвращает значение или nil")
@@ -39,7 +38,6 @@
 ```clojure
 (deftype RBDict [root cmp]
   api/IDict
-  (dict-empty [_] (RBDict. nil compare))
   (dict-insert [this k v] (RBDict. (insert-node cmp root k v) cmp))
   (dict-remove [this k] (RBDict. (remove-node cmp root k) cmp))
   (dict-lookup [this k] (lookup-value cmp root k))
@@ -137,7 +135,7 @@
 
 `gen-pairs` - генератор списка пар от 0 до 20 элементов.
 
-`gen-dict` - генератор словарей. Создает словарь из сгенерированного списка пар через последовательную вставку элементов.
+`gen-dict-with-key` - **зависимый генератор с использованием `gen/bind`**. Создаёт словарь и случайный ключ, который гарантированно существует в этом словаре. Демонстрирует продвинутую технику генерации зависимых тестовых данных, где второй генератор (ключ) зависит от результата первого (содержимое словаря). Возвращает map с ключами `:dict`, `:key` и `:has-key`.
 
 ### Проверяемые свойства в property-based тестах
 
