@@ -1,7 +1,6 @@
 (ns rb-dict.api)
 
 (defprotocol IDict
-  (dict-empty [this] "Пустой словарь")
   (dict-insert [this k v] "Добавляет элемент")
   (dict-remove [this k] "Удаляет элемент")
   (dict-lookup [this k] "Возвращает значение или nil")

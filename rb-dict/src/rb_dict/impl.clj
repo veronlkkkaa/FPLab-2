@@ -159,8 +159,6 @@
 
 (deftype RBDict [root cmp]
   api/IDict
-  (dict-empty [_] (RBDict. nil compare))
-
   (dict-insert [this k v]
     (RBDict. (insert-node cmp root k v) cmp))
 
