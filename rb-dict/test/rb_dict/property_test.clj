@@ -144,21 +144,21 @@
 ;; Remove реально удаляет существующий ключ
 (defspec remove-existing-key 100
   (prop/for-all [{:keys [dict key has-key]} gen/gen-dict-with-key]
-    (if (not has-key)
-      true
-      (nil? (dict/lookup (dict/remove-key dict key) key)))))
+                (if (not has-key)
+                  true
+                  (nil? (dict/lookup (dict/remove-key dict key) key)))))
 
 ;; Update существующего ключа перезаписывает значение
 (defspec update-existing-key 100
   (prop/for-all [{:keys [dict key has-key]} gen/gen-dict-with-key
                  v gen/gen-int]
-    (if (not has-key)
-      true
-      (= (dict/lookup (dict/insert dict key v) key) v))))
+                (if (not has-key)
+                  true
+                  (= (dict/lookup (dict/insert dict key v) key) v))))
 
 ;; Вызов словаря как функции работает на существующем ключе
 (defspec ifn-lookup-existing 100
   (prop/for-all [{:keys [dict key has-key]} gen/gen-dict-with-key]
-    (if (not has-key)
-      true
-      (= (dict key) (dict/lookup dict key)))))
+                (if (not has-key)
+                  true
+                  (= (dict key) (dict/lookup dict key)))))
