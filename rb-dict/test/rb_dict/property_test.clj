@@ -46,7 +46,7 @@
 (defspec map-keeps-keys 100
   (prop/for-all [pairs gen/gen-pairs]
                 (let [d (reduce (fn [d [k v]] (dict/insert d k v)) dict/empty-dict pairs)
-                      d2 (dict/dict-map d (fn [k v] (+ v 1)))]
+                      d2 (dict/dict-map d (fn [_ v] (+ v 1)))]
                   (= (set (dict/dict->seq d))
                      (set (dict/dict->seq d2))))))
 
@@ -65,10 +65,9 @@
                 (let [d (reduce (fn [d [k v]] (dict/insert d k v))
                                 dict/empty-dict
                                 pairs)
-                      s (seq d)
-                      keys (map first pairs)]
+                      s (seq d)]
                   (or (empty? s)
-                      (apply <= s)))))
+                      (= (sort s) (vec s))))))
 
 ;; Counted: count соответствует количеству уникальных ключей
 (defspec counted-correct 100
@@ -141,3 +140,25 @@
                       foldl-sum (dict/foldl d (fn [acc _ v] (+ acc v)) 0)
                       foldr-sum (dict/foldr d (fn [_ v acc] (+ v acc)) 0)]
                   (= foldl-sum foldr-sum))))
+
+;; Remove реально удаляет существующий ключ
+(defspec remove-existing-key 100
+  (prop/for-all [{:keys [dict key has-key]} gen/gen-dict-with-key]
+    (if (not has-key)
+      true
+      (nil? (dict/lookup (dict/remove-key dict key) key)))))
+
+;; Update существующего ключа перезаписывает значение
+(defspec update-existing-key 100
+  (prop/for-all [{:keys [dict key has-key]} gen/gen-dict-with-key
+                 v gen/gen-int]
+    (if (not has-key)
+      true
+      (= (dict/lookup (dict/insert dict key v) key) v))))
+
+;; Вызов словаря как функции работает на существующем ключе
+(defspec ifn-lookup-existing 100
+  (prop/for-all [{:keys [dict key has-key]} gen/gen-dict-with-key]
+    (if (not has-key)
+      true
+      (= (dict key) (dict/lookup dict key)))))
